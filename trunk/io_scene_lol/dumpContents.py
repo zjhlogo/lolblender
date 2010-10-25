@@ -56,19 +56,19 @@ def prettyPrintSkn(filename, start=0, end=-1, returnStr = True, **options):
     header, materials, indices, vertices = lolMesh.importSKN(filename)
     headerStr = ""
     if(options['PRINT_HEADER']):
-        headerStr += "magic:%d\nnumMaterials:%d\nnumObjects:%d\n\n" % (header['magic'], 
-            header['numMaterials'], header['numObjects']) 
+        headerStr += "magic:%d\nmatHeader:%d\nnumObjects:%d\nnumMaterials:%d\n\n" % (header.magic, 
+            header.matHeader, header.numObjects, header.numMaterials) 
 
     materialStr = ""
     if(options['PRINT_MATERIALS']):
-        if header['numMaterials'] == 0:
+        if header.matHeader == 0:
             materialStr +="No material blocks present\n\n"
         else:
             for material in materials:
                 materialStr += \
-                "matIndex:%d\nname:%s\nstartVertex:%d\tnumVertices:%d\nstartIndex:%d\tnumIndices:%d\n\n" %\
-                (material['matIndex'], bytes.decode(material['name']).strip('\x00'),material['startVertex'], \
-                material['numVertices'], material['startIndex'], material['numIndices'])
+                "name:%s\nstartVertex:%d\tnumVertices:%d\nstartIndex:%d\tnumIndices:%d\n\n" %\
+                (bytes.decode(material.name).strip('\x00'),material.startVertex, \
+                material.numVertices, material.startIndex, material.numIndices)
 
     indexStr = ""
     if(options['PRINT_INDICES']):
@@ -80,13 +80,13 @@ def prettyPrintSkn(filename, start=0, end=-1, returnStr = True, **options):
         for indx, vtx in enumerate(vertices[start:stop]):
             vertexStr += \
                 "%d\tpos:(%f,%f,%f)\tboneIndx:(%d,%d,%d,%d)\n"%(start+indx, 
-                    vtx['position'][0], vtx['position'][1],vtx['position'][2],
-                    vtx['boneIndex'][0],vtx['boneIndex'][1],vtx['boneIndex'][2],vtx['boneIndex'][3])
+                    vtx.position[0], vtx.position[1],vtx.position[2],
+                    vtx.boneIndex[0],vtx.boneIndex[1],vtx.boneIndex[2],vtx.boneIndex[3])
             vertexStr += \
                 "\tnorm:(%f,%f,%f)\tweights:(%f,%f,%f,%f)\n"%\
-                (vtx['normal'][0],vtx['normal'][1],vtx['normal'][2],\
-                vtx['weights'][0],vtx['weights'][1],vtx['weights'][2],vtx['weights'][3])
-            vertexStr += "\tuvs:(%f, %f)\n"%(vtx['texcoords'][0],vtx['texcoords'][1])
+                (vtx.normal[0],vtx.normal[1],vtx.normal[2],\
+                vtx.weights[0],vtx.weights[1],vtx.weights[2],vtx.weights[3])
+            vertexStr += "\tuvs:(%f, %f)\n"%(vtx.texcoords[0],vtx.texcoords[1])
 
     if returnStr == True:
         return headerStr+materialStr+indexStr+vertexStr
@@ -135,18 +135,18 @@ def cvsPrintSkn(filename, start=0, end=-1, returnStr = True, **options):
     header, materials, indices, vertices = lolMesh.importSKN(filename)
     headerStr = ""
     if(options['PRINT_HEADER']):
-        headerStr+="#magic, numMaterials, numObjects\n"
+        headerStr+="#magic, matHeader, numObjects\n"
         headerStr += "%d,%d,%d\n" % (header['magic'], 
-            header['numMaterials'], header['numObjects']) 
+            header['matHeader'], header['numObjects']) 
 
     materialStr = ""
     if(options['PRINT_MATERIALS']):
-        materialStr += "#matIndex, name, startVertex, numVertices,"
+        materialStr += "#numMaterials, name, startVertex, numVertices,"
         materialStr += "startIndex, numIndices\n"
         for material in materials:
             materialStr += \
             "%d,%s,%d,%d,%d,%d\n" %\
-            (material['matIndex'], bytes.decode(material['name']).strip('\x00'),material['startVertex'], \
+            (material['numMaterials'], bytes.decode(material['name']).strip('\x00'),material['startVertex'], \
             material['numVertices'], material['startIndex'], material['numIndices'])
 
     indexStr = ""
